@@ -20,49 +20,55 @@ namespace DNWS
 
     public String Url
     {
-      get { return _url;}
+      get { return _url; }
     }
 
     public String Filename
     {
-      get { return _filename;}
+      get { return _filename; }
     }
 
     public String Body
     {
-      get {return _body;}
+      get { return _body; }
     }
 
     public int Status
     {
-      get {return _status;}
+      get { return _status; }
     }
 
     public String Method
     {
-      get {return _method;}
+      get { return _method; }
     }
     public HTTPRequest(String request)
     {
       _propertyListDictionary = new Dictionary<String, String>();
       String[] lines = Regex.Split(request, "\\n");
 
-      if(lines.Length == 0) {
+      if (lines.Length == 0)
+      {
         _status = 500;
         return;
       }
 
       String[] statusLine = Regex.Split(lines[0], "\\s");
-      if(statusLine.Length != 4) { // too short something is wrong
+      if (statusLine.Length != 4)
+      { // too short something is wrong
         _status = 401;
         return;
       }
       if (!statusLine[0].ToLower().Equals("get"))
       {
         _method = "GET";
-      } else if(!statusLine[0].ToLower().Equals("post")) {
+      }
+      else if (!statusLine[0].ToLower().Equals("post"))
+      {
         _method = "POST";
-      } else {
+      }
+      else
+      {
         _status = 501;
         return;
       }
@@ -76,38 +82,74 @@ namespace DNWS
       {
         //Ref: http://stackoverflow.com/a/4982122
         _requestListDictionary = parts[1].Split('&').Select(x => x.Split('=')).ToDictionary(x => x[0].ToLower(), x => x[1]);
-      } else{
+      }
+      else
+      {
         _requestListDictionary = new Dictionary<String, String>();
       }
 
-      if(lines.Length == 1) return;
+      if (lines.Length == 1) return;
 
-      for(int i = 1; i != lines.Length; i++) {
-        String[] pair = Regex.Split(lines[i], ": "); //FIXME
-        if(pair.Length == 0) continue;
-        if(pair.Length == 1) { // handle post body
-          if(pair[0].Length > 1) { //FIXME, this is a quick hack
-            Dictionary<String, String> _bodys = pair[0].Split('&').Select(x => x.Split('=')).ToDictionary(x => x[0].ToLower(), x => x[1]);
-            _requestListDictionary = _requestListDictionary.Concat(_bodys).ToDictionary(x=>x.Key, x=>x.Value);
+      for (int i = 1; i < lines.Length; i++) // Start from line 1 (skip the status line)
+      {
+        if (string.IsNullOrWhiteSpace(lines[i]))
+          continue; // Skip empty lines
+
+        // Split the line into key-value pairs by the first occurrence of ": "
+        int separatorIndex = lines[i].IndexOf(": ");
+        if (separatorIndex > 0)
+        {
+          // Split into key and value
+          string key = lines[i].Substring(0, separatorIndex).Trim();
+          string value = lines[i].Substring(separatorIndex + 2).Trim();
+          addProperty(key, value);
+        }
+        else if (_method == "POST") // Handle POST body if the line doesn't follow "key: value" format
+        {
+          string body = lines[i].Trim();
+          if (!string.IsNullOrEmpty(body))
+          {
+            try
+            {
+              var bodyParams = body.Split('&')
+                                   .Select(x => x.Split('='))
+                                   .ToDictionary(
+                                       x => x[0].ToLower().Trim(),
+                                       x => x.Length > 1 ? x[1].Trim() : string.Empty // Handle missing values
+                                   );
+              _requestListDictionary = _requestListDictionary
+                  .Concat(bodyParams)
+                  .ToDictionary(x => x.Key, x => x.Value);
+            }
+            catch
+            {
+              // Handle any parsing errors gracefully
+              _status = 400; // Bad Request
+            }
           }
-        } else { // Length == 2, GET url request
-          addProperty(pair[0], pair[1]);
         }
       }
+
     }
     public String getPropertyByKey(String key)
     {
-      if(_propertyListDictionary.ContainsKey(key.ToLower())) {
+      if (_propertyListDictionary.ContainsKey(key.ToLower()))
+      {
         return _propertyListDictionary[key.ToLower()];
-      } else {
+      }
+      else
+      {
         return null;
       }
     }
     public String getRequestByKey(String key)
     {
-      if(_requestListDictionary.ContainsKey(key.ToLower())) {
+      if (_requestListDictionary.ContainsKey(key.ToLower()))
+      {
         return _requestListDictionary[key.ToLower()];
-      } else {
+      }
+      else
+      {
         return null;
       }
     }

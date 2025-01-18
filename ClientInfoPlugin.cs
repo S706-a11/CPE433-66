@@ -34,18 +34,23 @@ namespace DNWS
       HTTPResponse response = null;
       StringBuilder sb = new StringBuilder();
 
-      IPEndPoint endpoint = IPEndPoint.Parse(request.getPropertyByKey("remoteendpoint"));
+      // Parse client endpoint details
+      string remoteEndpoint = request.getPropertyByKey("RemoteEndPoint");
+      IPEndPoint endpoint = IPEndPoint.Parse(remoteEndpoint);
+
+      // Build HTML response
       sb.Append("<html><body><pre>");
       sb.AppendFormat("Client IP: {0}<br/>\n", endpoint.Address);
       sb.AppendFormat("Client Port: {0}<br/>\n", endpoint.Port);
-      sb.AppendFormat("Browser Information: {0}<br/>\n", request.getPropertyByKey("user-agent").Trim());
-      sb.AppendFormat("Accept Language: {0}<br/>\n", request.getPropertyByKey("accept-language").Trim());
-      sb.AppendFormat("Accept Encoding: {0}<br/>\n", request.getPropertyByKey("accept-encoding").Trim());
-
+      sb.AppendFormat("Browser Information: {0}<br/>\n", request.getPropertyByKey("User-Agent")?.Trim() ?? "N/A");
+      sb.AppendFormat("Accept Language: {0}<br/>\n", request.getPropertyByKey("Accept-Language")?.Trim() ?? "N/A");
+      sb.AppendFormat("Accept Encoding: {0}<br/>\n", request.getPropertyByKey("Accept-Encoding")?.Trim() ?? "N/A");
       sb.Append("</pre></body></html>");
 
+      // Create and return the response
       response = new HTTPResponse(200);
       response.body = Encoding.UTF8.GetBytes(sb.ToString());
+      response.type = "text/html";
       return response;
     }
 

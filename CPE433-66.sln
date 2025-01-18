@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.002.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DNWS", "DNWS.csproj", "{8A9BABE7-EA71-43E5-824B-27B00B113FA8}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8A9BABE7-EA71-43E5-824B-27B00B113FA8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8A9BABE7-EA71-43E5-824B-27B00B113FA8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8A9BABE7-EA71-43E5-824B-27B00B113FA8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8A9BABE7-EA71-43E5-824B-27B00B113FA8}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {3949A9E0-5407-41E6-80DC-963813172FBC}
+	EndGlobalSection
+EndGlobal
